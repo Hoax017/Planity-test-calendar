@@ -1,24 +1,17 @@
 import {Event, ProcessedEvent} from "../../types/Event";
 import s from "./Calendar.module.css";
-import {CalendarEvent} from "../Event/CalendarEvent";
-import { useMemo } from "react";
+import {useMemo} from "react";
 import {useScreenSize} from "../../hooks/useScreenSize";
+import {Line} from "../Line/Line";
+import {isOverlapping} from "../../utils";
 
 
-const  chooseColumn = (columns: Array<Array<ProcessedEvent>>, event: ProcessedEvent): Array<Event> | null => {
+const  chooseLine = (lines: Array<Array<ProcessedEvent>>, event: ProcessedEvent): Array<Event> | null => {
     // return column for event don't overlap with other events
-    return columns.find((column) => {
-        const isOverlapping = column.some((otherEvent) => {
-            return (
-                event.startDate < otherEvent.endDate &&
-                event.endDate > otherEvent.startDate
-            );
-        });
-        return !isOverlapping;
-    }) || null
+    return lines.find((line) => isOverlapping(line, event)) || null
 }
-const splitEventsInColumns = (events: Array<Event>): Array<Array<ProcessedEvent>> => {
-    const columns: Array<Array<ProcessedEvent>> = [];
+const splitEventsInLines = (events: Array<Event>): Array<Array<ProcessedEvent>> => {
+    const lines: Array<Array<ProcessedEvent>> = [];
     // order events by start date
     const sortedEvents = events.sort((a, b) => a.start.localeCompare(b.start))
     // process events to add start and end date
@@ -34,21 +27,21 @@ const splitEventsInColumns = (events: Array<Event>): Array<Array<ProcessedEvent>
             endDate,
         }
     });
-    // split events in columns
+    // split events in lines
     processedEvents.forEach((event) => {
-        const column = chooseColumn(columns, event);
-        if (column) {
-            column.push(event);
+        const line = chooseLine(lines, event);
+        if (line) {
+            line.push(event);
         } else {
-            // we create new column if we can't find column for event
-            columns.push([event])
+            // we create new line if we can't find line for event
+            lines.push([event])
         }
     })
-    return columns;
+    return lines;
 
 }
 export const Calendar = ({ events }: {events: Array<Event>}) => {
-    const columns = useMemo(() => splitEventsInColumns(events), [events]);
+    const lines = useMemo(() => splitEventsInLines(events), [events]);
     const {height: pageHeight} = useScreenSize();
     if (!pageHeight) {
         return null;
@@ -56,12 +49,8 @@ export const Calendar = ({ events }: {events: Array<Event>}) => {
     return (
         <>
         <div className={s.container}>
-            {columns.map((column, index) => (
-                <div key={index} className={s.eventColumn}>
-                    {column.map((event) => (
-                        <CalendarEvent key={event.id} pageHeight={pageHeight} event={event} />
-                    ))}
-                </div>
+            {lines.map((line, index) => (
+                <Line key={index} events={line} pageHeight={pageHeight}/>
             ))}
         </div></>
     );

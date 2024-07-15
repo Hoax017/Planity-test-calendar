@@ -1,10 +1,5 @@
 .container {
-    display: flex;
     height: 100vh;
     border: 1px solid #ccc;
-
-}
-.eventColumn {
-    flex: 1;
     position: relative;
 }
