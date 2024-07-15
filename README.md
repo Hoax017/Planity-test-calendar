@@ -1,3 +1,6 @@
+![Screenshot 2024-07-15 125008](https://github.com/user-attachments/assets/78c6e5c1-98c6-4476-8ba0-3fbd04c2ad2a)
+
+
 ## The problem
 
 The problem consists in rendering events on a calendar, avoiding overlapping events to visually overlap.
