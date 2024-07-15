@@ -1,0 +1,15 @@
+.event {
+    border: 1px solid #000;
+    background-color: #add8e6;
+    text-align: center;
+    overflow: hidden;
+    width: 100%;
+}
+
+.content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+}
